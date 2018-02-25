@@ -13,13 +13,20 @@ while (defined($_ = <>)) {
     push(@lines, $line);
     if ($_ eq "  <h3 class=\"no-num\">Attributes</h3>\n") {
          $mode = 'index';
+    } elsif ($_ eq "  <h3 class=\"no-num\">属性</h3>\n") {
+         $mode = 'index';
     } else {
         if ($mode eq 'bored') {
             if ($_ eq "   <dt><span data-x=\"concept-element-attributes\">Content attributes</span>:</dt>\n") {
                 $mode = 'element';
             }
+            elsif ($_ eq "   <dt><span data-x=\"concept-element-attributes\">内容属性</span>：</dt>\n") {
+                $mode = 'element';
+            }
         } elsif ($mode eq 'element') {
             if ($_ eq "   <dd><span>Global attributes</span></dd>\n") {
+                # ignore
+            } elsif ($_ eq "   <dd><span data-x=\"Global attributes\">全局属性</span></dd>\n") {
                 # ignore
             } elsif ($_ =~ m!^   <dd>.*<code data-x="((?:attr-|handler-)[^"]+)">.+</code>(.*)</dd>\n$!os) {
                 my $key = $1;
@@ -36,6 +43,8 @@ while (defined($_ = <>)) {
             } elsif ($_ =~ m/^   <!--.*-->\n$/os) {
                 # ignore
             } elsif ($_ eq "   <dd>Any other attribute that has no namespace (see prose).</dd>\n") {
+                # ignore
+            } elsif ($_ eq "   <dd>任何其他没有命名空间的属性。</dd>\n") {
                 # ignore
             } elsif ($_ =~ m!^   <dt>!o) {
                 $mode = 'bored';

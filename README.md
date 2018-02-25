@@ -2,6 +2,10 @@
 
 This repository contains the tools and instructions necessary for building the [HTML Standard](https://html.spec.whatwg.org/multipage/) from its [source](https://github.com/whatwg/html).
 
+## What's this folk used for?
+
+**This is a localized version of whatwg/html-build**. Since whatwg/html-build#build.sh contains hard-coded text, it won't work for languages other than English. 
+
 ## Getting set up
 
 Make sure you have `git` installed on your system, and you are using a Bash shell. (On Windows, `cmd.exe` will not work, but the Git Bash shell that comes with [Git for Windows](https://git-for-windows.github.io/) works nicely.)

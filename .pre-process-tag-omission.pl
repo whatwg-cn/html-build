@@ -14,7 +14,7 @@ sub pushLine {
     die unless exists $insertionPoints{$element};
     my $line = $insertionPoints{$element};
     if ($$line eq '') {
-        $$line .= "   <dt><span data-x=\"concept-element-tag-omission\">Tag omission in text/html</span>:</dt>\n";
+        $$line .= "   <dt><span data-x=\"concept-element-tag-omission\">text/html 中的标签省略</span>：</dt>\n";
     }
     $text =~ s!<(/?)p>!<${1}dd>!g;
     $text =~ s!may!can!g;
@@ -25,9 +25,16 @@ while (defined($_ = <>)) {
     if ($mode eq 'bored') {
         if ($_ eq "  <h5>Optional tags</h5>\n") {
             $mode = 'optionals';
-        } elsif ($_ eq "   <dt><dfn>Void elements</dfn></dt>\n") {
+        } elsif ($_ eq "  <h5 data-x=\"Optional tags\">可选标签</h5>\n") {
+            $mode = 'optionals';
+        } elsif ($_ eq "   <dt><dfn data-x=\"Void elements\">void 元素</dfn></dt>\n") {
+            $mode = 'voids';
+        } elsif ($_ eq "   <dt><dfn data-x=\"Void elements\">void elements</dfn></dt>\n") {
             $mode = 'voids';
         } elsif ($_ =~ m!<code>([^<]+)</code></dfn> elements?</h4>!) {
+            $current = $1;
+            $mode = 'element';
+        } elsif ($_ =~ m!<code>([^<]+)</code></dfn> 元素</h4>!) {
             $current = $1;
             $mode = 'element';
         }
@@ -37,8 +44,13 @@ while (defined($_ = <>)) {
             push(@lines, \$line);
             $insertionPoints{$current} = \$line;
             $mode = 'bored';
+        } elsif ($_ eq "   <dt><span data-x=\"concept-element-attributes\">内容属性</span>：</dt>\n") {
+            my $line = '';
+            push(@lines, \$line);
+            $insertionPoints{$current} = \$line;
+            $mode = 'bored';
         } elsif ($_ =~ m!</h!) {
-            die 'confused';
+            die "confused $_";
         } else {
             # ignore...
         }
@@ -78,9 +90,9 @@ foreach (keys %insertionPoints) {
     my $line = $insertionPoints{$_};
     if ($$line eq '') {
         if ($voids{$_}) {
-            pushLine($_, "  <p>No <span data-x=\"syntax-end-tag\">end tag</span>.</p>\n");
+            pushLine($_, "  <p>没有 <span data-x=\"syntax-end-tag\">结束标签</span>。</p>\n");
         } else {
-            pushLine($_, "  <p>Neither tag is omissible.</p>\n");
+            pushLine($_, "  <p>哪个标签都不能省略。</p>\n");
         }
     }
 }
